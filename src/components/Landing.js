@@ -5,30 +5,92 @@ import {
   TouchableHighlight,
   StyleSheet,
   Animated,
-  TextInput,
   Button
 } from 'react-native';
-import {Link} from 'react-router-native';
+import firebase from 'firebase';
 
 import BGImageComp from './BGImageComp';
 import FadeInView from './FadeInView';
+import Input from './Input';
+import Spinner from './Spinner';
 
 export default class Landing extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: ''
+      email: '',
+      password: '',
+      error: '',
+      loading: false
     }
 
   }
 
-  usernameChange(text) {
-    this.setState({username: text});
+  renderContent(){
+    switch(this.props.loggedIn){
+      case true: 
+      return(
+        <Button>
+          Log Out
+        </Button> 
+      );
+      case false:
+       return( <Button>
+          Log In
+        </Button>);
+      default: 
+      return <Spinner size={'large'}/>
+    }
   }
 
-  passwordChange(text) {
-    this.setState({password: text});
+  onButtonPress() {
+    const {email, password} = this.state;
+
+
+    this.setState({error: '', loading: true});
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(this.onLoginSuccess.bind(this))
+      .catch(() => {
+        firebase
+          .auth()
+          .createUserAndRetrieveDataWithEmailAndPassword(email, password)
+          .then(this.onLoginSuccess.bind(this))
+          .catch(this.onLoginFail.bind(this));
+      });
+  }
+
+  onLoginFail() {
+    this.setState({error: 'Authentication Failed', loading: false});
+  }
+
+  onLoginSuccess() {
+    this.setState({email: '', password: '', loading: false, error: ''});
+
+    this
+      .props
+      .history
+      .push('/welcome');
+  }
+
+  renderButton() {
+    if (this.state.loading) {
+      return <Spinner size={'small'}/>
+    } else {
+      return (
+        <Button
+          style={styles.button}
+          onPress={this
+          .onButtonPress
+          .bind(this)}
+          title="login"
+          >
+          Login
+        </Button>
+      );
+    }
   }
 
   render() {
@@ -47,23 +109,17 @@ export default class Landing extends Component {
         }}>
           <BGImageComp/>
           <Text style={styles.HeaderText}>New Text</Text>
-          <TextInput
-            style={styles.inputStyles}
-            placeholder="username"
+          <Input
+            label="email"
             value={this.state.username}
-            onChange={this
-            .usernameChange
-            .bind(this)}></TextInput>
-          <TextInput
-            style={styles.inputStyles}
-            placeholder="password"
+            onChangeText={email => this.setState({email})}></Input>
+          <Input
+            secureTextEntry={true}
+            label="password"
             value={this.state.password}
-            onChange={this
-            .passwordChange
-            .bind(this)}></TextInput>
-          <TouchableHighlight style={styles.button}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableHighlight>
+            onChangeText={password => this.setState({password})}></Input>
+          <Text>{this.state.error}</Text>
+          {this.renderButton()}
           <TouchableHighlight style={styles.button}>
             <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableHighlight>
@@ -86,13 +142,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height: 50,
     width: '100%'
-  },
-  inputStyles: {
-    backgroundColor: 'white',
-    width: '100%',
-    height: 60,
-    color: 'black',
-    marginTop: 10
   },
   button: {
     backgroundColor: 'blue',
