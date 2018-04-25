@@ -14,7 +14,7 @@ import FadeInView from './FadeInView';
 import Input from './Input';
 import Spinner from './Spinner';
 
-export default class Landing extends Component {
+export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -53,17 +53,7 @@ export default class Landing extends Component {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(this.onLoginSuccess.bind(this))
-      .catch(() => {
-        firebase
-          .auth()
-          .createUserAndRetrieveDataWithEmailAndPassword(email, password)
-          .then(this.onLoginSuccess.bind(this))
-          .catch(this.onLoginFail.bind(this));
-      });
-  }
-
-  onLoginFail() {
-    this.setState({error: 'Authentication Failed', loading: false});
+      .catch();
   }
 
   onLoginSuccess() {
@@ -75,24 +65,38 @@ export default class Landing extends Component {
       .push('/welcome');
   }
 
+  onLoginFail() {
+    this.setState({error: 'Authentication Failed', loading: false});
+  }
+
   renderButton() {
     if (this.state.loading) {
       return <Spinner size={'small'}/>
     } else {
       return (
-        <Button
-          style={styles.button}
-          onPress={this
-          .onButtonPress
-          .bind(this)}
-          title="login"
-          >
-          Login
-        </Button>
+        <View>
+            <Input
+            label="email"
+            value={this.state.username}
+            onChangeText={email => this.setState({email})}></Input>
+          <Input
+            secureTextEntry={true}
+            label="password"
+            value={this.state.password}
+            onChangeText={password => this.setState({password})}></Input>
+            <Button
+              style={styles.button}
+              onPress={this
+              .onButtonPress
+              .bind(this)}
+              title="login"
+              >
+            </Button>
+        </View> 
       );
     }
   }
-
+   
   render() {
     return (
       <FadeInView
@@ -109,25 +113,13 @@ export default class Landing extends Component {
         }}>
           <BGImageComp/>
           <Text style={styles.HeaderText}>New Text</Text>
-          <Input
-            label="email"
-            value={this.state.username}
-            onChangeText={email => this.setState({email})}></Input>
-          <Input
-            secureTextEntry={true}
-            label="password"
-            value={this.state.password}
-            onChangeText={password => this.setState({password})}></Input>
+
           <Text>{this.state.error}</Text>
           {this.renderButton()}
-          <TouchableHighlight style={styles.button}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableHighlight>
           <Button
-            title="Skip"
+            title="Sign Up"
             style={styles.button}
-            onPress={() => this.props.history.push("/welcome")}>
-            <Text style={styles.buttonText}>Skip</Text>
+            onPress={() => this.props.history.push("/signup")}>
           </Button>
         </View>
       </FadeInView>
@@ -151,9 +143,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 'auto',
-    marginRight: 'auto'
-  },
-  buttonText: {
+    marginRight: 'auto',
     color: 'white'
-  }
+  },
+
 });

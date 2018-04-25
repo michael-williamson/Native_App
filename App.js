@@ -9,9 +9,11 @@ import {NativeRouter, Route, Link} from 'react-router-native';
 import firebase from 'firebase';  
 import Keys from './config/keys'
 
-import Landing from './src/components/Landing';
+import Login from './src/components/Login';
+import Signup from './src/components/Signup';
 import Welcome from './src/components/Welcome';
 import Spinner from './src/components/Spinner';
+import Session from './src/components/Session';
 
 class App extends Component {
   state = {loggedIn: null}
@@ -53,8 +55,10 @@ class App extends Component {
           justifyContent: 'center',
           backgroundColor: 'gray'
         }}>
-          <Route exact path="/" loggedIn={this.state.loggedIn} component={Landing}/>
+          <Route exact path="/" loggedIn={this.state.loggedIn} component={Login}/>
+          <Route exact path="/signup" loggedIn={this.state.loggedIn} component={Signup}/>
           <Route exact path="/welcome" component={Welcome}/>
+          <Route exact path="/session" component={Session}/>
         </View>
       </NativeRouter>
 

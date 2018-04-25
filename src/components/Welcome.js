@@ -1,9 +1,18 @@
 import React, {Component} from 'react';
 import {View, Text, Button, StyleSheet} from 'react-native';
+import {OpenTok} from 'react-native-opentok';
+import Keys from '../../config/keys';
 
 import BGImageComp from './BGImageComp';
 
 class Welcome extends Component {
+  state ={
+    error: ''
+  }
+ 
+
+
+
   render() {
     return (
       <View
@@ -15,6 +24,7 @@ class Welcome extends Component {
         <BGImageComp/>
           <Text style={styles.HeaderText}>WELCOME PAGE</Text>
           <Button title="Back to login" onPress={() => this.props.history.push('/')}></Button>
+          <Button title="Join Session" onPress={()=> this.props.history.push('/session')}></Button>
       </View>
     )
   }
