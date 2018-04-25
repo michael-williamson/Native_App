@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, Button, StyleSheet} from 'react-native';
-import {OT_SESSION_ID, OT_TOKEN, OT_API_KEY} from '../../config/keys';
-import OpenTok,{Publisher} from 'react-native-opentok';
+import Keys from '../../config/keys';
+import {OTPublisher,OTSession} from 'opentok-react-native';
 
 import { Ref } from 'react';
 
@@ -16,22 +16,9 @@ class Session extends Component {
     error: ''
   }
 
-  // using async here just to get example working
-  async componentWillMount() {
-    try{
-    await OpenTok.connect(OT_SESSION_ID, OT_TOKEN);
-    OpenTok.on(OpenTok.events.ON_SIGNAL_RECEIVED, e => this.setState({error:e}));}
-    catch(e){
-      this.setState({error:e});
-    }
-
-  }
-
 
   renderContent(){
-    if(this.state.loading){
-      return <Spinner size={"large"}/> 
-    }else{
+
     return (
       <View
         style={{
@@ -39,17 +26,11 @@ class Session extends Component {
         flexDirection: 'column',
         justifyContent: 'center'
       }}>
-        <Publisher
-          style={{
-          height: 100,
-          width: 200
-        }}
-          sessionId={OT_SESSION_ID}
-          cameraDirection={'front'}
-          onPublishStart={()=> console.log('started')}/>
-        {this.printText.bind(this)}
+<OTSession apiKey={Keys.OT_API_KEY} sessionId={Keys.OT_SESSION_ID} token={Keys.OT_TOKEN}>
+  <OTPublisher style={{ width: 100, height: 100 }} audioTrack={'false'} publishAudio={'false'}/>
+</OTSession>
       </View>
-    )}
+    );
   }
 
 

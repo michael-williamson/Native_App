@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {View, Text, Button, StyleSheet} from 'react-native';
-import {OpenTok} from 'react-native-opentok';
 import Keys from '../../config/keys';
 
 import BGImageComp from './BGImageComp';
